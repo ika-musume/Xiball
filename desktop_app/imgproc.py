@@ -125,8 +125,8 @@ def imgproc(rawimg, mode, sens0, sens1, sens2):
 
     imgGray = cv2.cvtColor(imgGray, cv2.COLOR_GRAY2BGR)
 
-    procEnd = time.time()
-    print(procEnd - procStart)
+    #procEnd = time.time()
+    #print(procEnd - procStart)
 
     if(mode == 0):
         return imgBGR, palette, H, S, V, imgGray

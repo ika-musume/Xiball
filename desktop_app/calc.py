@@ -61,9 +61,11 @@ def getServoAngle(theta_deg, phi_deg):
 
     return angleA, angleB, angleC
 
+
+
+
 azimuth = 80
 tilt = 17
-
 
 angleA, angleB, angleC = getServoAngle(tilt, azimuth)
 print("azimuth = ", azimuth, ", tilt = ", tilt, " | ", "A = ", angleA, ", B = ", angleB, ", C = ", angleC)

@@ -39,8 +39,6 @@ def moveServoWithPulse(angleA, angleB, angleC):
 def moveServoWithAngle(angleA, angleB, angleC):
     ser.write(bytes('i' + str(angleA) + str(angleB) + str(angleC), encoding='ascii'))
 
-
-
 #Servo A        Servo B         Servo C
 #2228 = 20deg   2234 = 20deg    2220 = 20deg
 #2130 = 30deg   2150 = 30deg    2140 = 30deg
@@ -51,7 +49,7 @@ def moveServoWithAngle(angleA, angleB, angleC):
 #1640 = 80deg   1650 = 80deg    1640 = 80deg
 #1535 = 90deg   1565 = 90deg    1515 = 90deg
 
-moveServoWithAngle(700, 700, 700)
+moveServoWithAngle(263, 685, 685)
 #ser.write(bytes('i300300300', encoding='ascii'))
 
 """

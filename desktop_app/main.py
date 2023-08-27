@@ -16,7 +16,7 @@ cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 cam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
 if not cam.isOpened():
     print("Could not open an webcam")
-    exit()
+    #exit()
 
 #set main window's properties
 controlInterface = tk.Tk()
@@ -89,6 +89,33 @@ def isMaskEnabled():
     showMask = showMaskButtonVar.get()
 showMaskButton = tk.Checkbutton(controlInterface, text = "Show mask", variable = showMaskButtonVar, command = isMaskEnabled)
 showMaskButton.place(x=850, y=175)
+
+#PID coefficient sliders
+pCoeff, iCoeff, dCoeff = 0, 0, 0
+sliderPVar, sliderIVar, sliderDVar = tk.IntVar(), tk.IntVar(), tk.IntVar()
+def getSliderP(data):
+    global sens0
+    pCoeff = int(data)
+def getSliderI(data):
+    global sens1 
+    iCoeff = int(data)
+def getSliderD(data):
+    global sens2
+    dCoeff = int(data)
+
+sliderSens0 = tk.Scale(controlInterface, variable = sliderPVar, command = getSliderP, orient="horizontal", showvalue=True, to=10, length=300, resolution=0.01)
+sliderSens1 = tk.Scale(controlInterface, variable = sliderIVar, command = getSliderI, orient="horizontal", showvalue=True, to=10, length=300, resolution=0.01)
+sliderSens2 = tk.Scale(controlInterface, variable = sliderDVar, command = getSliderD, orient="horizontal", showvalue=True, to=10, length=300, resolution=0.01)
+sliderSens0.place(x=610, y=190)
+sliderSens1.place(x=610, y=230)
+sliderSens2.place(x=610, y=270)
+
+sliderP = tk.Label(controlInterface, text = "P coefficient")
+sliderI = tk.Label(controlInterface, text = "I coefficient")
+sliderD = tk.Label(controlInterface, text = "D coefficient")
+sliderP.place(x=520, y=208)
+sliderI.place(x=520, y=248)
+sliderD.place(x=520, y=288)
 
 
 

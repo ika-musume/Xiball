@@ -1,10 +1,11 @@
 from scipy.optimize import fsolve
 from math import *
 import time
+from servodrv import moveServoWithAngle
 
 #constants
-jd = 17  #the distance between two ball joints
-pd = 11  #the distance between the center of the upper plate and a ball joint
+jd = 18  #the distance between two ball joints
+pd = 10.4  #the distance between the center of the upper plate and a ball joint
 m  = 7.5 #the distance between the center of the base plate and a servo axis
 l1 = 6   #the length of the first part of an arm
 l2 = 8.5 #the length of the second of an arm
@@ -39,7 +40,7 @@ def equationServoJointpos(alpha, *pos):
     return (sqrt(x**2 + y**2) - (m - l1*cos(alpha)))**2 + (z - l1*sin(alpha))**2 - (l2)**2
 
 
-def getServoAngle(theta_deg, phi_deg):
+def calcServoAngle(theta_deg, phi_deg):
     global theta, phi, jd, pd
 
     #deg to rad
@@ -64,8 +65,61 @@ def getServoAngle(theta_deg, phi_deg):
 
 
 
-azimuth = 80
-tilt = 17
+azimuth = 45
 
-angleA, angleB, angleC = getServoAngle(tilt, azimuth)
-print("azimuth = ", azimuth, ", tilt = ", tilt, " | ", "A = ", angleA, ", B = ", angleB, ", C = ", angleC)
+c = 0
+for c in range(0, 360, 1):
+    tilt = 15
+    angleA, angleB, angleC = calcServoAngle(tilt, c)
+    angleA, angleB, angleC = int(angleA*10), int(angleB*10), int(angleC*10)
+    moveServoWithAngle(angleA, angleB, angleC)
+    print("azimuth = ", c, ", tilt = ", tilt, " | ", "A = ", angleA, ", B = ", angleB, ", C = ", angleC)
+    time.sleep(0.003)
+
+for c in range(0, 360, 1):
+    tilt = 15
+    angleA, angleB, angleC = calcServoAngle(tilt, c)
+    angleA, angleB, angleC = int(angleA*10), int(angleB*10), int(angleC*10)
+    moveServoWithAngle(angleA, angleB, angleC)
+    print("azimuth = ", c, ", tilt = ", tilt, " | ", "A = ", angleA, ", B = ", angleB, ", C = ", angleC)
+    time.sleep(0.003)
+
+for c in range(0, 360, 1):
+    tilt = 15
+    angleA, angleB, angleC = calcServoAngle(tilt, c)
+    angleA, angleB, angleC = int(angleA*10), int(angleB*10), int(angleC*10)
+    moveServoWithAngle(angleA, angleB, angleC)
+    print("azimuth = ", c, ", tilt = ", tilt, " | ", "A = ", angleA, ", B = ", angleB, ", C = ", angleC)
+    time.sleep(0.003)
+
+for c in range(0, 360, 1):
+    tilt = 15
+    angleA, angleB, angleC = calcServoAngle(tilt, c)
+    angleA, angleB, angleC = int(angleA*10), int(angleB*10), int(angleC*10)
+    moveServoWithAngle(angleA, angleB, angleC)
+    print("azimuth = ", c, ", tilt = ", tilt, " | ", "A = ", angleA, ", B = ", angleB, ", C = ", angleC)
+    time.sleep(0.003)
+
+for c in range(0, 360, 1):
+    tilt = 15
+    angleA, angleB, angleC = calcServoAngle(tilt, c)
+    angleA, angleB, angleC = int(angleA*10), int(angleB*10), int(angleC*10)
+    moveServoWithAngle(angleA, angleB, angleC)
+    print("azimuth = ", c, ", tilt = ", tilt, " | ", "A = ", angleA, ", B = ", angleB, ", C = ", angleC)
+    time.sleep(0.003)
+
+for c in range(0, 360, 1):
+    tilt = 15
+    angleA, angleB, angleC = calcServoAngle(tilt, c)
+    angleA, angleB, angleC = int(angleA*10), int(angleB*10), int(angleC*10)
+    moveServoWithAngle(angleA, angleB, angleC)
+    print("azimuth = ", c, ", tilt = ", tilt, " | ", "A = ", angleA, ", B = ", angleB, ", C = ", angleC)
+    time.sleep(0.003)
+
+time.sleep(0.003)
+tilt = 0
+azimuth = 90
+angleA, angleB, angleC = calcServoAngle(tilt, azimuth)
+angleA, angleB, angleC = int(angleA*10), int(angleB*10), int(angleC*10)
+moveServoWithAngle(angleA, angleB, angleC)
+print("azimuth = ", c, ", tilt = ", tilt, " | ", "A = ", angleA, ", B = ", angleB, ", C = ", angleC)

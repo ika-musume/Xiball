@@ -5,6 +5,7 @@ from PIL import Image, ImageTk
 
 #import user sources
 import imgproc
+import calc
 
 
 
@@ -30,12 +31,38 @@ camVision.place(x=0, y=0)
 fpsIndicator = tk.Label(controlInterface)
 fpsIndicator.place(x=500, y=15)
 
-#color picker and label
-controlInterface.bind("<Button-3>", imgproc.getPixelFromPointer) #color picker callback
+#color picker
 paletteInfo = tk.Label(controlInterface)
 paletteInfo.place(x=770, y=15)
 paletteColor = tk.Label(controlInterface)
 paletteColor.place(x=920, y=14)
+
+#mouse input handler
+isMousePressed = 0
+pointerX, pointerY = 0, 0
+refX, refY = 240, 240
+def mousePressed(event):
+    global isMousePressed, pointerX, pointerY
+    isMousePressed = 1
+    pointerX, pointerY = event.x, event.y
+def mouseReleased(event):
+    global isMousePressed
+    isMousePressed = 0
+def keyPPressed(event):
+    global isMousePressed, pointerX, pointerY
+    if(isMousePressed):
+        imgproc.getPixelFromPointer(pointerX, pointerY)
+def keyRPressed(event):
+    global isMousePressed, pointerX, pointerY
+    global refX, refY
+    if(isMousePressed):
+        if(pointerX < 480 and pointerY < 480):
+            refX = pointerX
+            refY = pointerY
+controlInterface.bind("<Button-3>", mousePressed)
+controlInterface.bind("<ButtonRelease-3>", mouseReleased) 
+controlInterface.bind("<p>", keyPPressed)
+controlInterface.bind("<r>", keyRPressed)
 
 #mode selector
 modeRadioButton = tk.BooleanVar()
@@ -95,27 +122,27 @@ pCoeff, iCoeff, dCoeff = 0, 0, 0
 sliderPVar, sliderIVar, sliderDVar = tk.IntVar(), tk.IntVar(), tk.IntVar()
 def getSliderP(data):
     global sens0
-    pCoeff = int(data)
+    pCoeff = data
 def getSliderI(data):
     global sens1 
-    iCoeff = int(data)
+    iCoeff = data
 def getSliderD(data):
     global sens2
-    dCoeff = int(data)
+    dCoeff = data
 
 sliderSens0 = tk.Scale(controlInterface, variable = sliderPVar, command = getSliderP, orient="horizontal", showvalue=True, to=10, length=300, resolution=0.01)
 sliderSens1 = tk.Scale(controlInterface, variable = sliderIVar, command = getSliderI, orient="horizontal", showvalue=True, to=10, length=300, resolution=0.01)
 sliderSens2 = tk.Scale(controlInterface, variable = sliderDVar, command = getSliderD, orient="horizontal", showvalue=True, to=10, length=300, resolution=0.01)
-sliderSens0.place(x=610, y=190)
-sliderSens1.place(x=610, y=230)
-sliderSens2.place(x=610, y=270)
+sliderSens0.place(x=610, y=200)
+sliderSens1.place(x=610, y=240)
+sliderSens2.place(x=610, y=280)
 
 sliderP = tk.Label(controlInterface, text = "P coefficient")
 sliderI = tk.Label(controlInterface, text = "I coefficient")
 sliderD = tk.Label(controlInterface, text = "D coefficient")
-sliderP.place(x=520, y=208)
-sliderI.place(x=520, y=248)
-sliderD.place(x=520, y=288)
+sliderP.place(x=520, y=218)
+sliderI.place(x=520, y=258)
+sliderD.place(x=520, y=298)
 
 
 
@@ -163,8 +190,10 @@ def updateCamVision(img):
 
 
 def main():
+    global refX, refY
+
     _, rawimg = cam.read() #get camera image
-    img, palette, color0, color1, color2, mask = imgproc.imgproc(rawimg, mode, sens0, sens1, sens2) #image processing
+    img, palette, color0, color1, color2, mask = imgproc.imgproc(rawimg, mode, sens0, sens1, sens2, refX, refY) #image processing
 
     updatePalette(palette, mode, color0, color1, color2) #update palette information
 
@@ -175,6 +204,6 @@ def main():
     
 
 
-
+calc.loadConversionTable()
 main()
 camVision.mainloop()

@@ -5,7 +5,7 @@ import time
 #global variables
 prevTimestamp, currentTimestamp = 0, 0
 pointerX, pointerY = 0, 0
-isMousePressed = 0
+isMousePosValid = 0
 palette = np.zeros((20, 20, 3), dtype=np.uint8)
 H, S, V, R, G, B = 0, 0, 0, 0, 0, 0
 
@@ -28,19 +28,19 @@ def getFPS():
     return fps
 
 #mouse click event
-def getPixelFromPointer(pointerPosition):
+def getPixelFromPointer(posX, posY):
     global pointerX, pointerY
-    global isMousePressed
+    global isMousePosValid
 
-    pointerX, pointerY = pointerPosition.x, pointerPosition.y
+    pointerX, pointerY = posX, posY
 
     if(pointerX < 480 and pointerY < 480):
-        isMousePressed = 1
+        isMousePosValid = 1
     
 
-def imgproc(rawimg, mode, sens0, sens1, sens2):
+def imgproc(rawimg, mode, sens0, sens1, sens2, refX, refY):
     global pointerX, pointerY
-    global isMousePressed
+    global isMousePosValid
     global palette
     global H, S, V, R, G, B
 
@@ -56,8 +56,8 @@ def imgproc(rawimg, mode, sens0, sens1, sens2):
 
     imgHSV = cv2.cvtColor(imgBGR, cv2.COLOR_BGR2HSV)
 
-    if(isMousePressed):
-        isMousePressed = 0
+    if(isMousePosValid):
+        isMousePosValid = 0
 
         #get pixel values
         if(mode == 0):
@@ -122,6 +122,7 @@ def imgproc(rawimg, mode, sens0, sens1, sens2):
         if (radius > 10 and radius < 80):
             cv2.circle(imgBGR, (int(x), int(y)), int(radius),(0, 255, 0), 2)
 
+    cv2.circle(imgBGR, (refX-2, refY-2), 4,(0, 0, 255), 2)
 
     imgGray = cv2.cvtColor(imgGray, cv2.COLOR_GRAY2BGR)
 

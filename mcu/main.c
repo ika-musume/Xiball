@@ -51,8 +51,10 @@ int getPulseWidthLinear(float angle, int pw20d, int pw90d) {
     return (int)round((float)pw20d - ((float)(pw20d-pw90d)/700)*((angle-20)*10));
 }
 
-int getPulseWidthInverval(float angle, int pw20d, int pw30d, int pw40d, int pw50d, int pw60d, int pw70d, int pw80d, int pw90d) {
-         if(angle < 20) return pw20d;
+int getPulseWidthInverval(float angle, int pw0d, int pw10d, int pw20d, int pw30d, int pw40d, int pw50d, int pw60d, int pw70d, int pw80d, int pw90d) {
+         if(angle < 0 ) return pw0d;
+    else if(angle < 10) return (int)round((float)pw0d - ((float)(pw0d-pw10d)/100)*((angle-0)*10));
+    else if(angle < 20) return (int)round((float)pw10d - ((float)(pw10d-pw20d)/100)*((angle-10)*10));
     else if(angle < 30) return (int)round((float)pw20d - ((float)(pw20d-pw30d)/100)*((angle-20)*10));
     else if(angle < 40) return (int)round((float)pw30d - ((float)(pw30d-pw40d)/100)*((angle-30)*10));
     else if(angle < 50) return (int)round((float)pw40d - ((float)(pw40d-pw50d)/100)*((angle-40)*10));
@@ -90,10 +92,11 @@ int main(void) {
     int reqDegServoA, reqDegServoB, reqDegServoC;
     int servoA_PW, servoB_PW, servoC_PW;
 
+    int servo;
+
 
     while (1) {
 	    uint16_t len = strlen((const char*)UserRxBufferFS); //check received string's length
-
 	    if(len > 0) {
 	        strncpy((char *)UserTxBufferFS, (const char*)UserRxBufferFS, len);
 	        strcat((char *)UserTxBufferFS, "\r\n");
@@ -102,9 +105,9 @@ int main(void) {
 	            reqDegServoB = ((int)(UserRxBufferFS[4] - 48) * 100) + ((int)(UserRxBufferFS[5] - 48) * 10) + ((int)(UserRxBufferFS[6] - 48) * 1);
 	            reqDegServoC = ((int)(UserRxBufferFS[7] - 48) * 100) + ((int)(UserRxBufferFS[8] - 48) * 10) + ((int)(UserRxBufferFS[9] - 48) * 1);
 
-                servoA_PW = getPulseWidthInverval(((float)reqDegServoA/10), 2228, 2130, 2025, 1935, 1840, 1740, 1640, 1535);
-                servoB_PW = getPulseWidthInverval(((float)reqDegServoB/10), 2234, 2150, 2052, 1978, 1865, 1770, 1650, 1565);
-                servoC_PW = getPulseWidthInverval(((float)reqDegServoC/10), 2220, 2140, 2040, 1960, 1860, 1755, 1640, 1515);
+                servoA_PW = getPulseWidthInverval(((float)reqDegServoA/10), 2400, 2310, 2228, 2130, 2025, 1935, 1840, 1740, 1640, 1535);
+                servoB_PW = getPulseWidthInverval(((float)reqDegServoB/10), 2410, 2330, 2234, 2150, 2052, 1978, 1865, 1770, 1650, 1565);
+                servoC_PW = getPulseWidthInverval(((float)reqDegServoC/10), 2410, 2320, 2220, 2140, 2040, 1960, 1860, 1755, 1640, 1515);
 
 	            htim2.Instance -> CCR1 = 20000 - servoA_PW; // - getPulseWidthLinear(reqDegServoA, SERVO_A_90_DEG_PULSE_WIDTH, SERVO_A_0_DEG_PULSE_WIDTH);
 	            htim2.Instance -> CCR2 = 20000 - servoB_PW; // - getPulseWidthLinear(reqDegServoB, SERVO_B_90_DEG_PULSE_WIDTH, SERVO_B_0_DEG_PULSE_WIDTH);
@@ -123,6 +126,18 @@ int main(void) {
                 htim2.Instance -> CCR2 = 20000 - servoB_PW;
                 htim2.Instance -> CCR3 = 20000 - servoC_PW;
 	        }
+	        else if(UserRxBufferFS[0] == 0x61) {
+	    		servo = ((int)(UserRxBufferFS[1] - 48) * 1000) + ((int)(UserRxBufferFS[2] - 48) * 100) + ((int)(UserRxBufferFS[3] - 48) * 10) + ((int)(UserRxBufferFS[4] - 48) * 1);
+	    		htim2.Instance -> CCR1 = 20000 - servo;
+	    	}
+	    	else if(UserRxBufferFS[0] == 0x62) {
+	    		servo = ((int)(UserRxBufferFS[1] - 48) * 1000) + ((int)(UserRxBufferFS[2] - 48) * 100) + ((int)(UserRxBufferFS[3] - 48) * 10) + ((int)(UserRxBufferFS[4] - 48) * 1);
+	    		htim2.Instance -> CCR2 = 20000 - servo;
+	    	}
+	    	else if(UserRxBufferFS[0] == 0x63) {
+	    		servo = ((int)(UserRxBufferFS[1] - 48) * 1000) + ((int)(UserRxBufferFS[2] - 48) * 100) + ((int)(UserRxBufferFS[3] - 48) * 10) + ((int)(UserRxBufferFS[4] - 48) * 1);
+	    		htim2.Instance -> CCR3 = 20000 - servo;
+	    	}
 	        else {
 	          CDC_Transmit_FS((uint8_t*)UserTxBufferFS, len);
 	        }

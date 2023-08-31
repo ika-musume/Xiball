@@ -6,7 +6,7 @@ servoA_PW, servoB_PW, servoC_PW = 0, 0, 0
 ser = serial.Serial(port = 'COM5', baudrate=576000, parity='N', stopbits=1, bytesize=8, timeout=8)
 
 #A Python prototype of the equivalent STM32 C function
-def getPulseWidth(angle, pw20d, pw30d, pw40d, pw50d, pw60d, pw70d, pw80d, pw90d):
+def getPulseWidth(angle, pw0d, pw10d, pw20d, pw30d, pw40d, pw50d, pw60d, pw70d, pw80d, pw90d):
     if(angle < 20):
         return pw20d
     elif(angle < 30):
@@ -30,17 +30,27 @@ def getPulseWidth(angle, pw20d, pw30d, pw40d, pw50d, pw60d, pw70d, pw80d, pw90d)
 def moveServoWithPulse(angleA, angleB, angleC):
     global servoA_PW, servoB_PW, servoC_PW
 
-    servoA_PW = getPulseWidth(angleA, 2228, 2130, 2025, 1935, 1840, 1740, 1640, 1535)
-    servoB_PW = getPulseWidth(angleB, 2234, 2150, 2052, 1978, 1865, 1770, 1650, 1565)
-    servoC_PW = getPulseWidth(angleC, 2220, 2140, 2040, 1960, 1860, 1755, 1640, 1515)
+    servoA_PW = getPulseWidth(angleA, 2400, 2310, 2228, 2130, 2025, 1935, 1840, 1740, 1640, 1535)
+    servoB_PW = getPulseWidth(angleB, 2410, 2330, 2234, 2150, 2052, 1978, 1865, 1770, 1650, 1565)
+    servoC_PW = getPulseWidth(angleC, 2410, 2320, 2220, 2140, 2040, 1960, 1860, 1755, 1640, 1515)
 
     ser.write(bytes('a' + str(servoA_PW) + str(servoB_PW) + str(servoC_PW), encoding='ascii'))
 
 def moveServoWithAngle(angleA, angleB, angleC):
-    ser.write(bytes('i' + str(angleA) + str(angleB) + str(angleC), encoding='ascii'))
+    angleAstr = str(angleA)
+    angleBstr = str(angleB)
+    angleCstr = str(angleC)
+
+    if(angleA < 100): angleAstr = '0' + str(angleA)
+    if(angleB < 100): angleBstr = '0' + str(angleB)
+    if(angleC < 100): angleCstr = '0' + str(angleC)
+
+    ser.write(bytes('i' + angleAstr + angleBstr + angleCstr, encoding='ascii'))
 
 #Servo A        Servo B         Servo C
-#2228 = 20deg   2234 = 20deg    2220 = 20deg
+#2400 = 0deg    2410 = 0deg     2410 = 0deg
+#2310 = 10deg   2330 = 10deg    2320 = 10deg
+#2228 = 20deg   2245 = 20deg    2220 = 20deg
 #2130 = 30deg   2150 = 30deg    2140 = 30deg
 #2025 = 40deg   2052 = 40deg    2040 = 40deg
 #1935 = 50deg   1978 = 50deg    1960 = 50deg
@@ -49,8 +59,8 @@ def moveServoWithAngle(angleA, angleB, angleC):
 #1640 = 80deg   1650 = 80deg    1640 = 80deg
 #1535 = 90deg   1565 = 90deg    1515 = 90deg
 
-moveServoWithAngle(263, 685, 685)
-#ser.write(bytes('i300300300', encoding='ascii'))
+#moveServoWithAngle(200, 25, 25)
+#ser.write(bytes('i000000000', encoding='ascii'))
 
 """
 c = 0

@@ -95,11 +95,18 @@ def loadConversionTable():
 def lookupServoAngle(azimuth_deg, tilt_deg):
     global angle2motor
 
-    dictKey = int(azimuth_deg*10*1000 + tilt_deg*10)
+    azimuth = int(round(azimuth_deg, 1) * 10)
+    tilt = int(round(tilt_deg, 1) * 10)
+
+    if(azimuth & 1): azimuth = azimuth + 1
+    if(tilt & 1): tilt = tilt + 1
+
+    dictKey = int(azimuth*1000 + tilt)
     angleA, angleB, angleC = angle2motor[str(dictKey)]
 
     return angleA, angleB, angleC
 
+"""
 #makeConversionTable()
 from servodrv import moveServoWithAngle
 loadConversionTable()
@@ -119,7 +126,7 @@ for i in range(0, 12, 1):
         angleA, angleB, angleC = lookupServoAngle(azimuth/10, tilt2/10)
         moveServoWithAngle(angleA, angleB, angleC)
         print("azimuth = ", azimuth/10, "tilt = ", tilt2/10, " | ", "A = ", angleA/10, ", B = ", angleB/10, ", C = ", angleC/10)
-        time.sleep(0.0001)
+        time.sleep(0.0004)
 
 for i in range(0, 12, 1):
     for azimuth in range(0, 3600, 2):
@@ -130,4 +137,5 @@ for i in range(0, 12, 1):
         angleA, angleB, angleC = lookupServoAngle(azimuth/10, tilt2/10)
         moveServoWithAngle(angleA, angleB, angleC)
         print("azimuth = ", azimuth/10, "tilt = ", tilt2/10, " | ", "A = ", angleA/10, ", B = ", angleB/10, ", C = ", angleC/10)
-        time.sleep(0.0001)
+        time.sleep(0.0004)
+"""

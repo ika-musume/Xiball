@@ -45,7 +45,9 @@ def imgproc(rawimg, mode, sens0, sens1, sens2, refX, refY):
     global H, S, V, R, G, B
 
     global procStart, procEnd
-    procStart = time.time()
+    #procStart = time.time()
+
+    isBallPresent, x, y = 0, 0, 0
 
     imgBGR = rawimg[0:, 80:560] #crop, BGR image
     
@@ -119,10 +121,11 @@ def imgproc(rawimg, mode, sens0, sens1, sens2, refX, refY):
         cv2.putText(imgBGR, "R=" + str(int(radius)), (400, 460), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2) #print radius
         cv2.putText(imgBGR, "(" + str(int(x)) + ", " + str(int(y)) + ")", (10, 460), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2) #print pos
 
-        if (radius > 10 and radius < 80):
+        if(radius > 10 and radius < 80):
+            isBallPresent = 1
             cv2.circle(imgBGR, (int(x), int(y)), int(radius),(0, 255, 0), 2)
 
-    cv2.circle(imgBGR, (refX-2, refY-2), 4,(0, 0, 255), 2)
+    cv2.circle(imgBGR, (refX, refY), 4,(0, 0, 255), 2)
 
     imgGray = cv2.cvtColor(imgGray, cv2.COLOR_GRAY2BGR)
 
@@ -130,6 +133,6 @@ def imgproc(rawimg, mode, sens0, sens1, sens2, refX, refY):
     #print(procEnd - procStart)
 
     if(mode == 0):
-        return imgBGR, palette, H, S, V, imgGray
+        return imgBGR, palette, H, S, V, imgGray, isBallPresent, x, y
     else:
-        return imgBGR, palette, R, G, B, imgGray
+        return imgBGR, palette, R, G, B, imgGray, isBallPresent, x, y

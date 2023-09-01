@@ -62,49 +62,6 @@ def moveServoWithAngle(angleA, angleB, angleC):
 #moveServoWithAngle(200, 25, 25)
 #ser.write(bytes('i000000000', encoding='ascii'))
 
-"""
-c = 0
-for c in range(370, 820, 1):
-    moveServoWithAngle(c, c, c)
-    sleep(0.001)
-
-for c in range(820, 370, -1):
-    moveServoWithAngle(c, c, c)
-    sleep(0.001)
-
-for c in range(370, 820, 1):
-    moveServoWithAngle(c, c, c)
-    sleep(0.001)
-
-for c in range(820, 370, -1):
-    moveServoWithAngle(c, c, c)
-    sleep(0.001)
-    
-for c in range(370, 820, 1):
-    moveServoWithAngle(c, c, c)
-    sleep(0.001)
-
-for c in range(820, 370, -1):
-    moveServoWithAngle(c, c, c)
-    sleep(0.001)
-
-for c in range(370, 820, 1):
-    moveServoWithAngle(c, c, c)
-    sleep(0.001)
-
-for c in range(820, 370, -1):
-    moveServoWithAngle(c, c, c)
-    sleep(0.001)
-
-for c in range(370, 820, 1):
-    moveServoWithAngle(c, c, c)
-    sleep(0.001)
-
-for c in range(820, 370, -1):
-    moveServoWithAngle(c, c, c)
-    sleep(0.001)
-"""
-
 
 """
 DEPRECATED

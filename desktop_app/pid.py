@@ -12,31 +12,32 @@ from math import *
 errorX_z, errorY_z = 240, 240 #previous errors
 errorAccX, errorAccY = 0, 0 #error accumulator
 
-errorsXPastOneSec, errorsYPastOneSec = [0]*60, [0]*60 #holds errors from past one second
+partialAccumulationPeriod = 60
 errorListAddrCntr = 0 #error list address counter
+partialErrorListX, partialErrorListY = [0]*partialAccumulationPeriod, [0]*partialAccumulationPeriod #holds errors from past one second
 partialErrorAccX, partialErrorAccY = 0, 0 #partial error accumulator that sums the errors from past one second
 
-#partialErrorThreshold = 360
+plateVector = 10000
 
 def pidControlXY(p, i, d, ballPosX, ballPosY, refPosX, refPosY, partialErrorThreshold):
     global errorX_z, errorY_z, errorAccX, errorAccY
-    global errorsXPastOneSec, errorsYPastOneSec, partialErrorAccX, partialErrorAccY
+    global partialErrorListX, partialErrorListY, partialErrorAccX, partialErrorAccY
     global errorListAddrCntr
 
-    #calc error value
+    #calc new error value
     errorX = refPosX - ballPosX
     errorY = refPosY - ballPosY
 
     #accumulate partial errors, subtract the previous values and add the new values
-    partialErrorAccX = partialErrorAccX - errorsXPastOneSec[errorListAddrCntr] + errorX 
-    partialErrorAccY = partialErrorAccY - errorsYPastOneSec[errorListAddrCntr] + errorY 
+    partialErrorAccX = partialErrorAccX - partialErrorListX[errorListAddrCntr] + errorX 
+    partialErrorAccY = partialErrorAccY - partialErrorListY[errorListAddrCntr] + errorY 
 
     #store the new error values
-    errorsXPastOneSec[errorListAddrCntr] = errorX
-    errorsYPastOneSec[errorListAddrCntr] = errorY
+    partialErrorListX[errorListAddrCntr] = errorX
+    partialErrorListY[errorListAddrCntr] = errorY
 
     #wrap-around counter
-    if(errorListAddrCntr < 59):
+    if(errorListAddrCntr < partialAccumulationPeriod - 1):
         errorListAddrCntr = errorListAddrCntr + 1
     else:
         errorListAddrCntr = 0
@@ -57,6 +58,28 @@ def pidControlXY(p, i, d, ballPosX, ballPosY, refPosX, refPosY, partialErrorThre
     else:
         weightedY = p*(errorY) + i*errorAccY + d*((errorY - errorY_z)/0.016667)
 
+    #shift prev error value
+    errorX_z = errorX
+    errorY_z = errorY
+
+
+    magnitudeXY = round(sqrt(weightedX**2 + weightedY**2))
+
+    if(magnitudeXY == 0):
+        tilt = 0.0
+        azimuth = 0.0
+        
+    elif(magnitudeXY < 10000):
+        tilt = round(degrees(asin(magnitudeXY / 10000)), 1)
+        azimuth = 0.0
+
+    else:
+        tilt = 28.0
+        azimuth = 0.0 
+
+    print(azimuth, tilt, errorAccX, partialErrorAccX, partialErrorAccY  )
+
+    return azimuth, tilt
 
 
 def pidControlDist(p, i, d, ballPosX, ballPosY, refPosX, refPosY, partialErrorThreshold):

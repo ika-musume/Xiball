@@ -6,7 +6,7 @@ from PIL import Image, ImageTk
 #import user sources
 import imgproc
 import calc
-
+import pid
 
 
 #Webcam settings, APC940
@@ -121,18 +121,18 @@ showMaskButton.place(x=850, y=175)
 pCoeff, iCoeff, dCoeff = 0, 0, 0
 sliderPVar, sliderIVar, sliderDVar = tk.IntVar(), tk.IntVar(), tk.IntVar()
 def getSliderP(data):
-    global sens0
-    pCoeff = data
+    global sens0, pCoeff
+    pCoeff = int(data)
 def getSliderI(data):
-    global sens1 
-    iCoeff = data
+    global sens1, iCoeff
+    iCoeff = int(data)
 def getSliderD(data):
-    global sens2
-    dCoeff = data
+    global sens2, dCoeff
+    dCoeff = int(data)
 
-sliderSens0 = tk.Scale(controlInterface, variable = sliderPVar, command = getSliderP, orient="horizontal", showvalue=True, to=10, length=300, resolution=0.01)
-sliderSens1 = tk.Scale(controlInterface, variable = sliderIVar, command = getSliderI, orient="horizontal", showvalue=True, to=10, length=300, resolution=0.01)
-sliderSens2 = tk.Scale(controlInterface, variable = sliderDVar, command = getSliderD, orient="horizontal", showvalue=True, to=10, length=300, resolution=0.01)
+sliderSens0 = tk.Scale(controlInterface, variable = sliderPVar, command = getSliderP, orient="horizontal", showvalue=True, to=100, length=300, resolution=1)
+sliderSens1 = tk.Scale(controlInterface, variable = sliderIVar, command = getSliderI, orient="horizontal", showvalue=True, to=100, length=300, resolution=1)
+sliderSens2 = tk.Scale(controlInterface, variable = sliderDVar, command = getSliderD, orient="horizontal", showvalue=True, to=100, length=300, resolution=1)
 sliderSens0.place(x=610, y=200)
 sliderSens1.place(x=610, y=240)
 sliderSens2.place(x=610, y=280)
@@ -186,24 +186,23 @@ def updateCamVision(img):
     fpsIndicator.config(text = "Current fps: " + fps)
 
 
-
-
-
 def main():
     global refX, refY
+    global pCoeff, iCoeff, dCoeff
 
     _, rawimg = cam.read() #get camera image
-    img, palette, color0, color1, color2, mask = imgproc.imgproc(rawimg, mode, sens0, sens1, sens2, refX, refY) #image processing
+    img, palette, color0, color1, color2, mask, isBallPresent, ballX, ballY = imgproc.imgproc(rawimg, mode, sens0, sens1, sens2, refX, refY) #image processing
 
+    #Update GUI elements
     updatePalette(palette, mode, color0, color1, color2) #update palette information
-
     if(showMask):
         updateCamVision(mask) #update tk labels
     else:
         updateCamVision(img) #update tk labels
+
+    azimuth, tilt = pid.pidControlXY(pCoeff, iCoeff, dCoeff, ballX, ballY, refX, refY, 180)
     
 
-
-calc.loadConversionTable()
+calc.loadConversionTable() #execute once
 main()
 camVision.mainloop()

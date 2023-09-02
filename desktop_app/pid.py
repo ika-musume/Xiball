@@ -22,13 +22,25 @@ errorAccX, errorAccY = 0, 0 #error accumulator
 partialErrorListX, partialErrorListY = [0]*partialAccumulationPeriod, [0]*partialAccumulationPeriod #holds errors from past one second
 partialErrorAccX, partialErrorAccY = 0, 0 #partial error accumulator that sums the errors from past one second
 
-def pidControlXY(KpX, KiX, KdX, KpY, KiY, KdY, ballPosX, ballPosY, refPosX, refPosY, partialErrorThreshold, filterAzimuth, filterTilt):
+def pidControlXY(isBallPresent, KpX, KiX, KdX, KpY, KiY, KdY, ballPosX, ballPosY, refPosX, refPosY, partialErrorThreshold, filterAzimuth, filterTilt):
+    global partialAccumulationPeriod
     global errorX_z, errorY_z, errorAccX, errorAccY
     global partialErrorListX, partialErrorListY, partialErrorAccX, partialErrorAccY
     global errorListAddrCntr
     global tilt_z, azimuth_z
 
     # +X = +err   -X = -err
+
+    if(not isBallPresent):
+        errorX_z = 0; errorY_z = 0; errorAccX = 0; errorAccY = 0
+        partialErrorAccX = 0; partialErrorAccY = 0
+        errorListAddrCntr = 0
+
+        for i in range(0, partialAccumulationPeriod, 1):
+            partialErrorListX[i] = 0
+            partialErrorListY[i] = 0
+        
+        return azimuth_z, tilt_z #keep the final values
 
     #calc new error value
     errorX = refPosX - ballPosX
@@ -127,13 +139,24 @@ errorAcc = 0 #error accumulator
 partialErrorList = [0]*partialAccumulationPeriod #holds errors from past one second
 partialErrorAcc = 0 #partial error accumulator that sums the errors from past one second
 
-def pidControlDist(Kp, Ki, Kd, ballPosX, ballPosY, refPosX, refPosY, partialErrorThreshold, filterAzimuth, filterTilt):
+def pidControlDist(isBallPresent, Kp, Ki, Kd, ballPosX, ballPosY, refPosX, refPosY, partialErrorThreshold, filterAzimuth, filterTilt):
+    global partialAccumulationPeriod
     global error_z, errorAcc
     global partialErrorList, partialErrorAcc
     global errorListAddrCntr
     global tilt_z, azimuth_z
 
     # +X = +err   -X = -err
+
+    if(not isBallPresent):
+        error_z = 0; errorAcc = 0
+        partialErrorAcc = 0
+        errorListAddrCntr = 0
+
+        for i in range(0, partialAccumulationPeriod, 1):
+            partialErrorList[i] = 0
+        
+        return azimuth_z, tilt_z #keep the final values
 
     #calc new error value
     errorX = ballPosX - refPosX

@@ -200,7 +200,7 @@ def main():
     else:
         updateCamVision(img) #update tk labels
 
-    azimuth, tilt = pid.pidControlXY(pCoeff, iCoeff, dCoeff, ballX, ballY, refX, refY, 180)
+    azimuth, tilt = pid.pidControlXY(pCoeff, iCoeff, dCoeff, pCoeff, iCoeff, dCoeff, ballX, ballY, refX, refY, 180, 1)
     
 
 calc.loadConversionTable() #execute once

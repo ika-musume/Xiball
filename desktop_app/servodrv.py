@@ -5,6 +5,9 @@ import time
 servoA_PW, servoB_PW, servoC_PW = 0, 0, 0
 ser = serial.Serial(port = 'COM5', baudrate=576000, parity='N', stopbits=1, bytesize=8, timeout=8)
 
+"""
+DEPRECATED
+
 #A Python prototype of the equivalent STM32 C function
 def getPulseWidth(angle, pw0d, pw10d, pw20d, pw30d, pw40d, pw50d, pw60d, pw70d, pw80d, pw90d):
     if(angle < 20):
@@ -35,7 +38,8 @@ def moveServoWithPulse(angleA, angleB, angleC):
     servoC_PW = getPulseWidth(angleC, 2410, 2320, 2220, 2140, 2040, 1960, 1860, 1755, 1640, 1515)
 
     ser.write(bytes('a' + str(servoA_PW) + str(servoB_PW) + str(servoC_PW), encoding='ascii'))
-
+"""
+    
 def moveServoWithAngle(angleA, angleB, angleC):
     angleAstr = str(angleA)
     angleBstr = str(angleB)

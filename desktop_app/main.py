@@ -7,6 +7,7 @@ from PIL import Image, ImageTk
 import imgproc
 import calc
 import pid
+import servodrv
 
 
 #Webcam settings, APC940
@@ -15,6 +16,7 @@ cam.set(cv2.CAP_PROP_FPS, 60)
 cam.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 cam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
+
 if not cam.isOpened():
     print("Could not open an webcam")
     #exit()
@@ -130,9 +132,9 @@ def getSliderD(data):
     global sens2, dCoeff
     dCoeff = int(data)
 
-sliderSens0 = tk.Scale(controlInterface, variable = sliderPVar, command = getSliderP, orient="horizontal", showvalue=True, to=100, length=300, resolution=1)
+sliderSens0 = tk.Scale(controlInterface, variable = sliderPVar, command = getSliderP, orient="horizontal", showvalue=True, to=1000, length=300, resolution=1)
 sliderSens1 = tk.Scale(controlInterface, variable = sliderIVar, command = getSliderI, orient="horizontal", showvalue=True, to=100, length=300, resolution=1)
-sliderSens2 = tk.Scale(controlInterface, variable = sliderDVar, command = getSliderD, orient="horizontal", showvalue=True, to=100, length=300, resolution=1)
+sliderSens2 = tk.Scale(controlInterface, variable = sliderDVar, command = getSliderD, orient="horizontal", showvalue=True, to=1000, length=300, resolution=1)
 sliderSens0.place(x=610, y=200)
 sliderSens1.place(x=610, y=240)
 sliderSens2.place(x=610, y=280)
@@ -200,7 +202,9 @@ def main():
     else:
         updateCamVision(img) #update tk labels
 
-    azimuth, tilt = pid.pidControlXY(pCoeff, iCoeff, dCoeff, pCoeff, iCoeff, dCoeff, ballX, ballY, refX, refY, 180, 1)
+    azimuth, tilt = pid.pidControlXY(isBallPresent, pCoeff, iCoeff, dCoeff, pCoeff, iCoeff, dCoeff, ballX, ballY, refX, refY, 180, 1, 0.7)
+    a, b, c = calc.lookupServoAngle(azimuth, tilt)
+    servodrv.moveServoWithAngle(a, b, c)
     
 
 calc.loadConversionTable() #execute once

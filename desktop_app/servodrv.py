@@ -3,7 +3,7 @@ from time import sleep
 import time
 
 servoA_PW, servoB_PW, servoC_PW = 0, 0, 0
-ser = serial.Serial(port = 'COM5', baudrate=576000, parity='N', stopbits=1, bytesize=8, timeout=8)
+ser = serial.Serial(port = 'COM5', baudrate=19200, parity='N', stopbits=1, bytesize=8, timeout=8)
 
 """
 DEPRECATED
@@ -39,18 +39,23 @@ def moveServoWithPulse(angleA, angleB, angleC):
 
     ser.write(bytes('a' + str(servoA_PW) + str(servoB_PW) + str(servoC_PW), encoding='ascii'))
 """
-    
+
 def moveServoWithAngle(angleA, angleB, angleC):
     angleAstr = str(angleA)
     angleBstr = str(angleB)
     angleCstr = str(angleC)
 
-    if(angleA < 100): angleAstr = '0' + str(angleA)
-    if(angleB < 100): angleBstr = '0' + str(angleB)
-    if(angleC < 100): angleCstr = '0' + str(angleC)
+    if(len(angleAstr) < 4): angleAstr = '0' + str(angleA)
+    if(len(angleBstr) < 4): angleBstr = '0' + str(angleB)
+    if(len(angleCstr) < 4): angleCstr = '0' + str(angleC)
 
-    ser.write(bytes('i' + angleAstr + angleBstr + angleCstr, encoding='ascii'))
+    ser.write(bytes('f' + angleAstr + angleBstr + angleCstr, encoding='ascii'))
 
+    #if(wasSent == 0): ser.write(bytes('i' + angleAstr + angleBstr + angleCstr, encoding='ascii'))
+    #wasSent = wasSent ^ 1
+
+
+#Towerpro Servo
 #Servo A        Servo B         Servo C
 #2400 = 0deg    2410 = 0deg     2410 = 0deg
 #2310 = 10deg   2330 = 10deg    2320 = 10deg
@@ -63,8 +68,25 @@ def moveServoWithAngle(angleA, angleB, angleC):
 #1640 = 80deg   1650 = 80deg    1640 = 80deg
 #1535 = 90deg   1565 = 90deg    1515 = 90deg
 
+#Hitec Servo
+#Servo A        Servo B         Servo C
+#0650 = 0deg    0665 = 0deg     0645 = 0deg
+#0760 = 10deg   0765 = 10deg    0745 = 10deg
+#0860 = 20deg   0865 = 20deg    0845 = 20deg
+#0960 = 30deg   0965 = 30deg    0945 = 30deg
+#1055 = 40deg   1060 = 40deg    1040 = 40deg
+#1150 = 50deg   1150 = 50deg    1130 = 50deg
+#1240 = 60deg   1245 = 60deg    1225 = 60deg
+#1330 = 70deg   1340 = 70deg    1315 = 70deg
+#1420 = 80deg   1430 = 80deg    1410 = 80deg
+#1510 = 90deg   1525 = 90deg    1500 = 90deg
+
+ser.write(bytes('f600045004500', encoding='ascii'))
+
 #moveServoWithAngle(200, 25, 25)
 #ser.write(bytes('i000000000', encoding='ascii'))
+
+
 
 
 """

@@ -1,7 +1,7 @@
 from math import *
 
 #constants
-plateVector = 10000
+plateVector = 1000000
 partialAccumulationPeriod = 60
 
 #PID controller
@@ -44,7 +44,7 @@ def pidControlXY(isBallPresent, KpX, KiX, KdX, KpY, KiY, KdY, ballPosX, ballPosY
 
     #calc new error value
     errorX = refPosX - ballPosX
-    errorY = refPosY - ballPosY
+    errorY = -(refPosY - ballPosY)
 
     #accumulate partial errors, subtract the previous values and add the new values
     partialErrorAccX = partialErrorAccX - partialErrorListX[errorListAddrCntr] + errorX 
@@ -65,12 +65,12 @@ def pidControlXY(isBallPresent, KpX, KiX, KdX, KpY, KiY, KdY, ballPosX, ballPosY
     errorAccY = errorAccY + errorY
 
     #I control on/off
-    if(partialErrorAccX < partialErrorThreshold):
+    if(abs(partialErrorAccX) < partialErrorThreshold):
         errorAccX = 0 #clear accumulator
         weightedErrorX = KpX*(errorX) + KdX*((errorX - errorX_z)/0.016667) #average 60fps
     else:
         weightedErrorX = KpX*(errorX) + KiX*errorAccX + KdX*((errorX - errorX_z)/0.016667) #average 60fps
-    if(partialErrorAccY < partialErrorThreshold):
+    if(abs(partialErrorAccY) < partialErrorThreshold):
         errorAccY = 0 #clear accumulator
         weightedErrorY = KpY*(errorY) + KdY*((errorY - errorY_z)/0.016667)
     else:
@@ -89,7 +89,7 @@ def pidControlXY(isBallPresent, KpX, KiX, KdX, KpY, KiY, KdY, ballPosX, ballPosY
         tilt = 0.0
     
     #if the angle between X+Y vector and the normal vector of the plate(10000) < 90deg
-    elif(magnitudeXY < 10000):
+    elif(magnitudeXY < plateVector):
         #atan2 negative(3rd and 4th quadrant)
         if(weightedErrorY < 0):
             azimuth = degrees(2*pi + atan2(weightedErrorY, weightedErrorX))
@@ -98,7 +98,7 @@ def pidControlXY(isBallPresent, KpX, KiX, KdX, KpY, KiY, KdY, ballPosX, ballPosY
         else:
             azimuth = degrees(atan2(weightedErrorY, weightedErrorX))
 
-        tilt = degrees(asin(magnitudeXY / 10000))
+        tilt = degrees(asin(magnitudeXY / plateVector))
 
     #max angle
     else:
@@ -113,11 +113,11 @@ def pidControlXY(isBallPresent, KpX, KiX, KdX, KpY, KiY, KdY, ballPosX, ballPosY
         tilt = 28.0 #clipping
 
     #tilting angle clipping
-    if(tilt > 28.0): tilt = 28.0
+    if(tilt > 28): tilt = 28
 
     #azimuth is wrap-around value
-    if(azimuth < 0.0): azimuth = 360.0 + azimuth
-    elif(azimuth >= 360.0): azimuth = 360.0 - azimuth
+    if(azimuth < 0): azimuth = 360 + azimuth
+    elif(azimuth >= 360): azimuth = azimuth - 360
 
     #filter
     azimuth = round(azimuth_z*(1 - filterAzimuth) + azimuth*filterAzimuth, 1)
@@ -128,7 +128,7 @@ def pidControlXY(isBallPresent, KpX, KiX, KdX, KpY, KiY, KdY, ballPosX, ballPosY
     tilt_z = tilt
 
     #debug
-    print(azimuth, tilt, errorAccX, partialErrorAccX, partialErrorAccY)
+    print("azimuth=", azimuth, "tilt=", tilt, errorAccX, partialErrorAccX, partialErrorAccY)
 
     return azimuth, tilt
 
@@ -208,7 +208,7 @@ def pidControlDist(isBallPresent, Kp, Ki, Kd, ballPosX, ballPosY, refPosX, refPo
 
     #azimuth is wrap-around value
     if(azimuth < 0.0): azimuth = 360.0 + azimuth
-    elif(azimuth >= 360.0): azimuth = 360.0 - azimuth
+    elif(azimuth >= 360.0): azimuth = azimuth - 360.0
 
     #filter
     azimuth = round(azimuth_z*(1 - filterAzimuth) + azimuth*filterAzimuth, 1)

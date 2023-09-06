@@ -53,7 +53,7 @@ def imgproc(rawimg, mode, sens0, sens1, sens2, refX, refY):
     
     #apply circle imgGray
     circleimgGray = np.zeros((480, 480, 3), dtype=np.uint8)
-    cv2.circle(circleimgGray, (240, 240), 240, (255, 255, 255), -1, cv2.LINE_8, 0)
+    cv2.circle(circleimgGray, (240, 240), 220, (255, 255, 255), -1, cv2.LINE_8, 0)
     imgBGR = imgBGR & circleimgGray
 
     imgHSV = cv2.cvtColor(imgBGR, cv2.COLOR_BGR2HSV)
@@ -121,7 +121,7 @@ def imgproc(rawimg, mode, sens0, sens1, sens2, refX, refY):
         cv2.putText(imgBGR, "R=" + str(int(radius)), (400, 460), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2) #print radius
         cv2.putText(imgBGR, "(" + str(int(x)) + ", " + str(int(y)) + ")", (10, 460), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2) #print pos
 
-        if(radius > 10 and radius < 80):
+        if(radius > 30 and radius < 80):
             isBallPresent = 1
             cv2.circle(imgBGR, (int(x), int(y)), int(radius),(0, 255, 0), 2)
 

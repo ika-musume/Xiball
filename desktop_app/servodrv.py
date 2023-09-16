@@ -3,7 +3,7 @@ from time import sleep
 import time
 
 servoA_PW, servoB_PW, servoC_PW = 0, 0, 0
-ser = serial.Serial(port = 'COM5', baudrate=19200, parity='N', stopbits=1, bytesize=8, timeout=8)
+ser = serial.Serial(port = 'COM5', baudrate=57600, parity='N', stopbits=1, bytesize=8, timeout=8)
 
 """
 DEPRECATED
@@ -51,9 +51,6 @@ def moveServoWithAngle(angleA, angleB, angleC):
 
     ser.write(bytes('f' + angleAstr + angleBstr + angleCstr, encoding='ascii'))
 
-    #if(wasSent == 0): ser.write(bytes('i' + angleAstr + angleBstr + angleCstr, encoding='ascii'))
-    #wasSent = wasSent ^ 1
-
 
 #Towerpro Servo
 #Servo A        Servo B         Servo C
@@ -81,7 +78,7 @@ def moveServoWithAngle(angleA, angleB, angleC):
 #1420 = 80deg   1430 = 80deg    1410 = 80deg
 #1510 = 90deg   1525 = 90deg    1500 = 90deg
 
-ser.write(bytes('f600045004500', encoding='ascii'))
+#ser.write(bytes('f600060006000', encoding='ascii'))
 
 #moveServoWithAngle(200, 25, 25)
 #ser.write(bytes('i000000000', encoding='ascii'))

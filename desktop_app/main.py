@@ -2,13 +2,17 @@
 import cv2
 import tkinter as tk
 from PIL import Image, ImageTk
+import keyboard
+import time
 
 #import user sources
 import imgproc
 import calc
 import pid
-import servodrv
+#import servodrv
 
+#global variable
+toggleGUI, toggleGUI_z = 1, 1
 
 #Webcam settings, APC940
 cam = cv2.VideoCapture(cv2.CAP_DSHOW+1)
@@ -174,39 +178,72 @@ def updatePalette(palette, mode, h_r, s_g, v_b):
 
     paletteInfo.config(text = paletteMessage)
 
+"""
+def destroyGUI():
+    global camVision
+    camVision.destroy()
+    #xcamVision.quit()
+"""
+    
 def updateCamVision(img):
+    #update frame indicator
+    fps = imgproc.getFPS()
+    fpsIndicator.config(text = "Current fps: " + fps)
+    
     #update camera vision
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     img = Image.fromarray(img)
     imglabel = ImageTk.PhotoImage(image = img)
     camVision.imglabel = imglabel
     camVision.configure(image = imglabel)
-    camVision.after(1, main)
 
-    #update frame indicator
-    fps = imgproc.getFPS()
-    fpsIndicator.config(text = "Current fps: " + fps)
 
 
 def main():
     global refX, refY
     global pCoeff, iCoeff, dCoeff
+    global toggleGUI, toggleGUI_z
 
     _, rawimg = cam.read() #get camera image
     img, palette, color0, color1, color2, mask, isBallPresent, ballX, ballY = imgproc.imgproc(rawimg, mode, sens0, sens1, sens2, refX, refY) #image processing
 
+    if(toggleGUI):
     #Update GUI elements
-    updatePalette(palette, mode, color0, color1, color2) #update palette information
-    if(showMask):
-        updateCamVision(mask) #update tk labels
-    else:
-        updateCamVision(img) #update tk labels
+        updatePalette(palette, mode, color0, color1, color2) #update palette information
+        if(showMask):
+            updateCamVision(mask) #update tk labels
+        else:
+            updateCamVision(img) #update tk labels
 
     azimuth, tilt = pid.pidControlXY(isBallPresent, pCoeff, iCoeff, dCoeff, pCoeff, iCoeff, dCoeff, ballX, ballY, refX, refY, 180, 1, 0.7)
     a, b, c = calc.lookupServoAngle(azimuth, tilt)
-    servodrv.moveServoWithAngle(a, b, c)
-    
+    #servodrv.moveServoWithAngle(a, b, c)
+    #print("pid")
 
+    """
+    #Close GUI window
+    if(toggleGUI):
+        toggleGUI_z = toggleGUI
+        if(keyboard.is_pressed("w")):
+            toggleGUI = toggleGUI ^ 1
+
+        if(toggleGUI == 1 and toggleGUI_z == 1):
+            camVision.after(1, main)
+        elif(toggleGUI == 0 and toggleGUI_z == 1):
+            print("GUI terminated. This operation cannot be undone. Close the window manually.")
+            print("Current settings:", "HSV sensitivity = (", sens0, sens1, sens2, ") PID = (", pCoeff, iCoeff, dCoeff, ")")
+            destroyGUI()
+    """ 
+
+#start of the main code
 calc.loadConversionTable() #execute once
+
 main()
 camVision.mainloop()
+
+print("GUI terminated. This operation cannot be undone.")
+print("Current settings:", "HSV sensitivity = (", sens0, sens1, sens2, ") PID = (", pCoeff, iCoeff, dCoeff, ")")
+
+while(not keyboard.is_pressed("x")):
+    toggleGUI = 0
+    main()

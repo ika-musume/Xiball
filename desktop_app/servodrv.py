@@ -3,7 +3,7 @@ from time import sleep
 import time
 
 servoA_PW, servoB_PW, servoC_PW = 0, 0, 0
-ser = serial.Serial(port = 'COM5', baudrate=57600, parity='N', stopbits=1, bytesize=8, timeout=8)
+ser = serial.Serial(port = 'COM3', baudrate=57600, parity='N', stopbits=1, bytesize=8, timeout=8)
 
 """
 DEPRECATED
@@ -68,17 +68,19 @@ def moveServoWithAngle(angleA, angleB, angleC):
 #Hitec Servo
 #Servo A        Servo B         Servo C
 #0650 = 0deg    0665 = 0deg     0645 = 0deg
-#0760 = 10deg   0765 = 10deg    0745 = 10deg
-#0860 = 20deg   0865 = 20deg    0845 = 20deg
-#0960 = 30deg   0965 = 30deg    0945 = 30deg
-#1055 = 40deg   1060 = 40deg    1040 = 40deg
-#1150 = 50deg   1150 = 50deg    1130 = 50deg
-#1240 = 60deg   1245 = 60deg    1225 = 60deg
-#1330 = 70deg   1340 = 70deg    1315 = 70deg
+#0750 = 10deg   0765 = 10deg    0745 = 10deg
+#0840 = 20deg   0865 = 20deg    0845 = 20deg
+#0930 = 30deg   0965 = 30deg    0945 = 30deg
+#1020 = 40deg   1060 = 40deg    1040 = 40deg
+#1120 = 50deg   1150 = 50deg    1130 = 50deg
+#1220 = 60deg   1245 = 60deg    1225 = 60deg
+#1320 = 70deg   1340 = 70deg    1315 = 70deg
 #1420 = 80deg   1430 = 80deg    1410 = 80deg
 #1510 = 90deg   1525 = 90deg    1500 = 90deg
 
-#ser.write(bytes('f600060006000', encoding='ascii'))
+
+#ser.write(bytes('f500050005000', encoding='ascii'))
+#ser.write(bytes('a0900', encoding='ascii'))
 
 #moveServoWithAngle(200, 25, 25)
 #ser.write(bytes('i000000000', encoding='ascii'))

@@ -116,11 +116,11 @@ def pidControlXY(isBallPresent, KpX, KiX, KdX, KpY, KiY, KdY, ballPosX, ballPosY
     if(tilt > 28): tilt = 28
 
     #azimuth is wrap-around value
-    if(azimuth < 0): azimuth = 360 + azimuth
-    elif(azimuth >= 360): azimuth = azimuth - 360
+    if(azimuth < 0.0): azimuth = 360.0 + azimuth
+    elif(azimuth >= 360.0): azimuth = azimuth - 360.0
 
     #filter
-    azimuth = round(azimuth_z*(1 - filterAzimuth) + azimuth*filterAzimuth, 1)
+    #azimuth = round(azimuth_z*(1 - filterAzimuth) + azimuth*filterAzimuth, 1)
     tilt = round(tilt_z*(1 - filterTilt) + tilt*filterTilt, 1)
 
     #shift current value

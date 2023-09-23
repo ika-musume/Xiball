@@ -9,7 +9,7 @@ import time
 import imgproc
 import calc
 import pid
-#import servodrv
+import servodrv
 
 #global variable
 toggleGUI, toggleGUI_z = 1, 1
@@ -217,8 +217,9 @@ def main():
 
     azimuth, tilt = pid.pidControlXY(isBallPresent, pCoeff, iCoeff, dCoeff, pCoeff, iCoeff, dCoeff, ballX, ballY, refX, refY, 180, 1, 0.7)
     a, b, c = calc.lookupServoAngle(azimuth, tilt)
-    #servodrv.moveServoWithAngle(a, b, c)
-    #print("pid")
+    servodrv.moveServoWithAngle(a, b, c)
+
+    camVision.after(1, main)
 
     """
     #Close GUI window
@@ -241,9 +242,11 @@ calc.loadConversionTable() #execute once
 main()
 camVision.mainloop()
 
+"""
 print("GUI terminated. This operation cannot be undone.")
 print("Current settings:", "HSV sensitivity = (", sens0, sens1, sens2, ") PID = (", pCoeff, iCoeff, dCoeff, ")")
 
 while(not keyboard.is_pressed("x")):
     toggleGUI = 0
     main()
+"""

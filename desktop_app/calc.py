@@ -1,6 +1,5 @@
 from scipy.optimize import fsolve
 from math import *
-import time
 import json
 
 #constants

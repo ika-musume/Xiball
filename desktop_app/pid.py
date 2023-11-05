@@ -14,31 +14,31 @@ partialAccumulationPeriod = 60
 #weightedErrorX = Kp*120 + Ki*3600 + Kd*(20/0.016667 = 1200) = 1200 + 3600 + 3600 = 8400
 
 tilt_z, azimuth_z = 0, 0
-errorListAddrCntr = 0 #error list address counter
+#errorListAddrCntr = 0 #error list address counter
 
 #variables for pidConctolXY function
 errorX_z, errorY_z = 0, 0 #previous errors
 errorAccX, errorAccY = 0, 0 #error accumulator
-partialErrorListX, partialErrorListY = [0]*partialAccumulationPeriod, [0]*partialAccumulationPeriod #holds errors from past one second
-partialErrorAccX, partialErrorAccY = 0, 0 #partial error accumulator that sums the errors from past one second
+#partialErrorListX, partialErrorListY = [0]*partialAccumulationPeriod, [0]*partialAccumulationPeriod #holds errors from past one second
+#partialErrorAccX, partialErrorAccY = 0, 0 #partial error accumulator that sums the errors from past one second
 
 def pidControlXY(isBallPresent, KpX, KiX, KdX, KpY, KiY, KdY, ballPosX, ballPosY, refPosX, refPosY, partialErrorThreshold, filterAzimuth, filterTilt):
-    global partialAccumulationPeriod
+    #global partialAccumulationPeriod
     global errorX_z, errorY_z, errorAccX, errorAccY
-    global partialErrorListX, partialErrorListY, partialErrorAccX, partialErrorAccY
-    global errorListAddrCntr
+    #global partialErrorListX, partialErrorListY, partialErrorAccX, partialErrorAccY
+    #global errorListAddrCntr
     global tilt_z, azimuth_z
 
     # +X = +err   -X = -err
 
     if(not isBallPresent):
         errorX_z = 0; errorY_z = 0; errorAccX = 0; errorAccY = 0
-        partialErrorAccX = 0; partialErrorAccY = 0
-        errorListAddrCntr = 0
+        #partialErrorAccX = 0; partialErrorAccY = 0
+        #errorListAddrCntr = 0
 
-        for i in range(0, partialAccumulationPeriod, 1):
-            partialErrorListX[i] = 0
-            partialErrorListY[i] = 0
+        #for i in range(0, partialAccumulationPeriod, 1):
+        #    partialErrorListX[i] = 0
+        #    partialErrorListY[i] = 0
         
         return azimuth_z, tilt_z #keep the final values
 
@@ -46,35 +46,38 @@ def pidControlXY(isBallPresent, KpX, KiX, KdX, KpY, KiY, KdY, ballPosX, ballPosY
     errorX = refPosX - ballPosX
     errorY = -(refPosY - ballPosY)
 
-    #accumulate partial errors, subtract the previous values and add the new values
-    partialErrorAccX = partialErrorAccX - partialErrorListX[errorListAddrCntr] + errorX 
-    partialErrorAccY = partialErrorAccY - partialErrorListY[errorListAddrCntr] + errorY 
+    ##accumulate partial errors, subtract the previous values and add the new values
+    #partialErrorAccX = partialErrorAccX - partialErrorListX[errorListAddrCntr] + errorX 
+    #partialErrorAccY = partialErrorAccY - partialErrorListY[errorListAddrCntr] + errorY 
 
-    #store the new error values
-    partialErrorListX[errorListAddrCntr] = errorX
-    partialErrorListY[errorListAddrCntr] = errorY
+    ##store the new error values
+    #partialErrorListX[errorListAddrCntr] = errorX
+    #partialErrorListY[errorListAddrCntr] = errorY
 
-    #wrap-around counter
-    if(errorListAddrCntr < partialAccumulationPeriod - 1):
-        errorListAddrCntr = errorListAddrCntr + 1
-    else:
-        errorListAddrCntr = 0
+    ##wrap-around counter
+    #if(errorListAddrCntr < partialAccumulationPeriod - 1):
+    #    errorListAddrCntr = errorListAddrCntr + 1
+    #else:
+    #    errorListAddrCntr = 0
 
     #accumulate errors
     errorAccX = errorAccX + errorX
     errorAccY = errorAccY + errorY
 
-    #I control on/off
-    if(abs(partialErrorAccX) < partialErrorThreshold):
-        errorAccX = 0 #clear accumulator
-        weightedErrorX = KpX*(errorX) + KdX*((errorX - errorX_z)/0.016667) #average 60fps
-    else:
-        weightedErrorX = KpX*(errorX) + KiX*errorAccX + KdX*((errorX - errorX_z)/0.016667) #average 60fps
-    if(abs(partialErrorAccY) < partialErrorThreshold):
-        errorAccY = 0 #clear accumulator
-        weightedErrorY = KpY*(errorY) + KdY*((errorY - errorY_z)/0.016667)
-    else:
-        weightedErrorY = KpY*(errorY) + KiY*errorAccY + KdY*((errorY - errorY_z)/0.016667)
+    ##I control on/off
+    #if(abs(partialErrorAccX) < partialErrorThreshold):
+    #    errorAccX = 0 #clear accumulator
+    #    weightedErrorX = KpX*(errorX) + KdX*((errorX - errorX_z)/0.016667) #average 60fps
+    #else:
+    #    weightedErrorX = KpX*(errorX) + KiX*errorAccX + KdX*((errorX - errorX_z)/0.016667) #average 60fps
+    #if(abs(partialErrorAccY) < partialErrorThreshold):
+    #    errorAccY = 0 #clear accumulator
+    #    weightedErrorY = KpY*(errorY) + KdY*((errorY - errorY_z)/0.016667)
+    #else:
+    #    weightedErrorY = KpY*(errorY) + KiY*errorAccY + KdY*((errorY - errorY_z)/0.016667)
+
+    weightedErrorX = KpX*(errorX) + KiX*errorAccX + KdX*((errorX - errorX_z)/0.016667) #average 60fps
+    weightedErrorY = KpY*(errorY) + KiY*errorAccY + KdY*((errorY - errorY_z)/0.016667)
 
     #shift current error value
     errorX_z = errorX
@@ -112,6 +115,10 @@ def pidControlXY(isBallPresent, KpX, KiX, KdX, KpY, KiY, KdY, ballPosX, ballPosY
 
         tilt = 28.0 #clipping
 
+    #rounding
+    tilt = round(tilt, 5)
+    azimuth = round(azimuth, 1)
+
     #tilting angle clipping
     if(tilt > 28): tilt = 28
 
@@ -128,7 +135,7 @@ def pidControlXY(isBallPresent, KpX, KiX, KdX, KpY, KiY, KdY, ballPosX, ballPosY
     tilt_z = tilt
 
     #debug
-    print("azimuth=", azimuth, "tilt=", tilt, errorAccX, partialErrorAccX, partialErrorAccY)
+    #print("azimuth=", azimuth, "tilt=", tilt, errorAccX, partialErrorAccX, partialErrorAccY)
 
     return azimuth, tilt
 

@@ -2,14 +2,13 @@
 import cv2
 import tkinter as tk
 from PIL import Image, ImageTk
-import keyboard
-import time
 
 #import user sources
 import imgproc
 import calc
 import pid
 import servodrv
+import plotter
 
 #global variable
 toggleGUI, toggleGUI_z = 1, 1
@@ -215,10 +214,18 @@ def main():
         else:
             updateCamVision(img) #update tk labels
 
+    #plotting a graph
+    if(isBallPresent):
+        plotter.recordValue(int(ballX), int(ballY))
+    else:
+        plotter.flushBuffer()
+
+    #move arms
     azimuth, tilt = pid.pidControlXY(isBallPresent, pCoeff, iCoeff, dCoeff, pCoeff, iCoeff, dCoeff, ballX, ballY, refX, refY, 180, 1, 0.7)
     a, b, c = calc.lookupServoAngle(azimuth, tilt)
     servodrv.moveServoWithAngle(a, b, c)
 
+    #delay
     camVision.after(1, main)
 
     """

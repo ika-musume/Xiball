@@ -2,10 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #value recorder
-maxRecordingLength = 600
+MAX_RECORDING_LENGTH = 600
 addrCntr = 0
-xPosBuf = np.zeros(shape=(maxRecordingLength), dtype=int)
-yPosBuf = np.zeros(shape=(maxRecordingLength), dtype=int)
+xPosBuf = np.zeros(shape=(MAX_RECORDING_LENGTH), dtype=int)
+yPosBuf = np.zeros(shape=(MAX_RECORDING_LENGTH), dtype=int)
 
 #plotter
 fileNum = 0
@@ -13,33 +13,33 @@ fileNum = 0
 
 def flushBuffer():
     global addrCntr, xPosBuf, yPosBuf
-    
+
     addrCntr = 0
-    xPosBuf = np.zeros(maxRecordingLength)
-    yPosBuf = np.zeros(maxRecordingLength)
+    xPosBuf = np.zeros(MAX_RECORDING_LENGTH)
+    yPosBuf = np.zeros(MAX_RECORDING_LENGTH)
 
     plt.clf()
 
 def recordValue(xPos, yPos):
     global addrCntr, xPosBuf, yPosBuf
 
-    if(addrCntr < maxRecordingLength):
+    if(addrCntr < MAX_RECORDING_LENGTH):
         xPosBuf[addrCntr] = xPos - 240
         yPosBuf[addrCntr] = 240 - yPos
         addrCntr = addrCntr + 1
         
-    elif(addrCntr == maxRecordingLength):
+    elif(addrCntr == MAX_RECORDING_LENGTH):
         plotBuffer()
         addrCntr = addrCntr + 1
 
 def plotBuffer():
     global xPosBuf, yPosBuf, fileNum
 
-    x = np.linspace(0, maxRecordingLength - 1, maxRecordingLength)
+    x = np.linspace(0, MAX_RECORDING_LENGTH - 1, MAX_RECORDING_LENGTH)
     plt.plot(x, xPosBuf, 'b-', x, yPosBuf, 'r-')
     plt.xlabel("samples")
     plt.ylabel("pos(pixel)")
-    plt.xlim([0, maxRecordingLength])
+    plt.xlim([0, MAX_RECORDING_LENGTH])
     plt.ylim([-240, 240])
     #plt.show()
     plt.savefig("GRAPH" + str(fileNum))

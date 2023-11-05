@@ -9,6 +9,7 @@ import calc
 import pid
 import servodrv
 import plotter
+import trajectory
 
 #global variable
 toggleGUI, toggleGUI_z = 1, 1
@@ -150,6 +151,17 @@ sliderI.place(x=520, y=258)
 sliderD.place(x=520, y=298)
 
 
+#Orbit button
+orbit = 0
+def toggleOrbit():
+    global orbit
+    orbit = ~orbit
+    print(orbit)
+
+btnOrbit = tk.Button(controlInterface, text='Orbit', width=10, height=5, command=toggleOrbit)
+btnOrbit.place(x=530, y=350)
+
+
 
 def updatePalette(palette, mode, h_r, s_g, v_b):
     palette = cv2.cvtColor(palette, cv2.COLOR_BGR2RGB)
@@ -202,6 +214,9 @@ def main():
     global refX, refY
     global pCoeff, iCoeff, dCoeff
     global toggleGUI, toggleGUI_z
+
+    if(orbit != 0):
+        refX, refY = trajectory.increaseOrbitRadius()
 
     _, rawimg = cam.read() #get camera image
     img, palette, color0, color1, color2, mask, isBallPresent, ballX, ballY = imgproc.imgproc(rawimg, mode, sens0, sens1, sens2, refX, refY) #image processing

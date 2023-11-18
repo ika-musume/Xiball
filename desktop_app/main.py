@@ -8,7 +8,7 @@ import imgproc
 import calc
 import pid
 import servodrv
-import plotter
+import recorder
 import trajectory
 
 #global variable
@@ -229,17 +229,19 @@ def main():
         else:
             updateCamVision(img) #update tk labels
 
-    #plotting a graph
-    if(isBallPresent):
-        plotter.recordValue(int(ballX), int(ballY))
-    else:
-        plotter.flushBuffer()
-
     #move arms
-    azimuth, tilt = pid.pidControlXY(isBallPresent, pCoeff, iCoeff, dCoeff, pCoeff, iCoeff, dCoeff, ballX, ballY, refX, refY, 180, 1, 0.7)
+    azimuth, tilt = pid.pidControlXY(isBallPresent, pCoeff, iCoeff, dCoeff, pCoeff, iCoeff, dCoeff, ballX, ballY, refX, refY, 180, 1, 0.8)
     a, b, c = calc.lookupServoAngle(azimuth, tilt)
     servodrv.moveServoWithAngle(a, b, c)
 
+    
+    #plotting a graph
+    if(isBallPresent):
+        recorder.recordValue(int(refX-240), int(240-refY), int(ballX), int(ballY), tilt, azimuth, a*0.01, b*0.01, c*0.01)
+    else:
+        recorder.flushBuffer()
+    
+        
     #delay
     camVision.after(1, main)
 
